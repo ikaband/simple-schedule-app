@@ -212,6 +212,7 @@ tbody tr:hover td {
   min-width: 50px;
   padding: 3px 4px;
   position: relative;
+  border-right: 1px solid var(--c-border-light);
 }
 
 .cell-check .check-wrapper {
@@ -543,8 +544,10 @@ tbody tr:hover td {
   }
 
   .memo-text {
-    max-width: 50px;
     font-size: 0.7rem;
+    max-width: 100px;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   .memo-btn {
