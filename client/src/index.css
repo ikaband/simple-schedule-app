@@ -454,29 +454,88 @@ tbody tr:hover td {
 /* =================== Responsive =================== */
 @media (max-width: 640px) {
   html {
-    font-size: 13px;
+    font-size: 15px;
   }
 
   .app {
-    padding: 12px 8px 32px;
+    padding: 12px 4px 32px;
   }
 
   .app-header h1 {
     font-size: 1.15rem;
   }
 
+  /* Sticky date column only (period is inside the same visual group) */
+  .cell-date,
+  .cell-period {
+    position: sticky;
+    z-index: 5;
+    background: var(--c-surface);
+  }
+
+  .cell-date {
+    left: 0;
+  }
+
+  .cell-period {
+    left: 60px;
+    border-right-color: var(--c-border);
+  }
+
+  thead th:first-child {
+    position: sticky;
+    left: 0;
+    z-index: 15;
+  }
+
+  .row-weekend .cell-date,
+  .row-weekend .cell-period {
+    background: var(--c-weekend-1);
+  }
+
+  .row-weekend-alt .cell-date,
+  .row-weekend-alt .cell-period {
+    background: var(--c-weekend-2);
+  }
+
+  /* Larger touch targets */
+  .cb {
+    width: 22px;
+    height: 22px;
+  }
+
+  .cb:checked::after {
+    left: 6px;
+    top: 2px;
+    width: 6px;
+    height: 11px;
+  }
+
   thead th {
-    padding: 8px 4px;
-    font-size: 0.7rem;
+    padding: 10px 6px;
+    font-size: 0.78rem;
   }
 
   tbody td {
-    padding: 3px 3px;
+    padding: 6px 4px;
   }
 
   .cell-check {
-    min-width: 44px;
-    padding: 3px 2px;
+    min-width: 48px;
+    padding: 4px 4px;
+  }
+
+  .cell-date {
+    padding: 6px 12px;
+  }
+
+  .cell-date .date-num {
+    font-size: 1rem;
+  }
+
+  .cell-period {
+    padding: 6px 8px;
+    font-size: 0.78rem;
   }
 
   .note-popover {
@@ -486,5 +545,15 @@ tbody tr:hover td {
   .memo-text {
     max-width: 50px;
     font-size: 0.7rem;
+  }
+
+  .memo-btn {
+    width: 20px;
+    height: 20px;
+    font-size: 0.75rem;
+  }
+
+  .cell-count {
+    font-size: 0.85rem;
   }
 }
