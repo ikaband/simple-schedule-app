@@ -7,10 +7,19 @@ const responsesRouter = require('./routes/responses');
 const { getDb } = require('./db');
 
 const app = express();
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.API_PORT || process.env.PORT || 3001;
 
 app.use(cors());
 app.use(express.json());
+
+// 設定API
+app.get('/api/config', (req, res) => {
+  res.json({
+    title: process.env.APP_TITLE || '日程調整',
+    year: process.env.APP_YEAR || '',
+    members: (process.env.MEMBERS || '').split(',').filter(Boolean),
+  });
+});
 
 // メンバー一覧API
 app.get('/api/members', (req, res) => {

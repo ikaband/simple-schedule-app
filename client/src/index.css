@@ -1,0 +1,376 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+JP:wght@400;500;600;700&display=swap');
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  --c-bg: #f0f2f5;
+  --c-surface: #ffffff;
+  --c-border: #e2e5ea;
+  --c-border-light: #eef0f3;
+  --c-text: #1a1d23;
+  --c-text-sub: #6b7280;
+  --c-primary: #4f6ef7;
+  --c-primary-light: #eef1fe;
+  --c-weekend-1: #fff8f0;
+  --c-weekend-2: #fff0de;
+  --c-weekend-accent: #e67700;
+  --c-green-bg: #e8f5e9;
+  --c-green-text: #2e7d32;
+  --c-red-bg: #ffeef0;
+  --c-red-text: #d32f2f;
+  --c-header-bg: #1e293b;
+  --c-header-text: #f1f5f9;
+  --radius: 10px;
+  --radius-sm: 6px;
+  --shadow: 0 1px 3px rgba(0,0,0,.06), 0 4px 12px rgba(0,0,0,.04);
+  --shadow-lg: 0 4px 16px rgba(0,0,0,.08), 0 8px 32px rgba(0,0,0,.06);
+  --font: 'Inter', 'Noto Sans JP', -apple-system, BlinkMacSystemFont, sans-serif;
+  --transition: 150ms ease;
+}
+
+html {
+  font-size: 15px;
+}
+
+body {
+  font-family: var(--font);
+  background: var(--c-bg);
+  color: var(--c-text);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100dvh;
+}
+
+/* =================== Layout =================== */
+.app {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px 16px 48px;
+}
+
+.app-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.app-header h1 {
+  font-size: 1.35rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.app-header .badge {
+  font-size: 0.7rem;
+  font-weight: 600;
+  background: var(--c-primary);
+  color: #fff;
+  padding: 3px 10px;
+  border-radius: 999px;
+  letter-spacing: 0.02em;
+}
+
+/* =================== Table Card =================== */
+.table-card {
+  background: var(--c-surface);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+
+.table-scroll {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: 0.85rem;
+  white-space: nowrap;
+}
+
+/* =================== Header =================== */
+thead th {
+  background: var(--c-header-bg);
+  color: var(--c-header-text);
+  padding: 10px 12px;
+  font-weight: 600;
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  border-bottom: 2px solid rgba(255,255,255,.08);
+}
+
+thead th:first-child {
+  border-top-left-radius: var(--radius);
+}
+
+thead th:last-child {
+  border-top-right-radius: var(--radius);
+}
+
+/* =================== Body Cells =================== */
+tbody td {
+  padding: 6px 10px;
+  border-bottom: 1px solid var(--c-border-light);
+  transition: background var(--transition);
+}
+
+tbody tr:hover td {
+  background-color: rgba(79, 110, 247, .03);
+}
+
+/* Date cell */
+.cell-date {
+  text-align: center;
+  vertical-align: middle;
+  font-weight: 600;
+  border-right: 2px solid var(--c-border);
+  min-width: 70px;
+}
+
+.cell-date .date-num {
+  font-size: 0.95rem;
+}
+
+.cell-date .date-dow {
+  font-size: 0.7rem;
+  font-weight: 500;
+  color: var(--c-text-sub);
+  margin-top: 1px;
+}
+
+.cell-date .date-dow.weekend {
+  color: var(--c-weekend-accent);
+  font-weight: 600;
+}
+
+/* Period cell */
+.cell-period {
+  text-align: center;
+  font-weight: 600;
+  font-size: 0.75rem;
+  color: var(--c-text-sub);
+  min-width: 32px;
+  width: 32px;
+  padding: 4px 4px;
+  border-right: 1px solid var(--c-border-light);
+}
+
+/* Checkbox cell */
+.cell-check {
+  text-align: center;
+  min-width: 52px;
+  width: 52px;
+  padding: 4px 6px;
+  position: relative;
+}
+
+.cell-check .check-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+/* =================== Checkbox =================== */
+.cb {
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+  accent-color: var(--c-primary);
+  margin: 0;
+  flex-shrink: 0;
+}
+
+/* =================== Memo Button (add) =================== */
+.memo-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  border: 1px solid var(--c-border);
+  border-radius: 3px;
+  background: var(--c-bg);
+  color: var(--c-text-sub);
+  font-size: 0.65rem;
+  font-weight: 700;
+  font-family: var(--font);
+  cursor: pointer;
+  padding: 0;
+  line-height: 1;
+  transition: background var(--transition), border-color var(--transition), color var(--transition);
+  flex-shrink: 0;
+}
+
+.memo-btn:hover {
+  background: var(--c-primary-light);
+  border-color: var(--c-primary);
+  color: var(--c-primary);
+}
+
+/* =================== Memo Text (display) =================== */
+.memo-text {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--c-text);
+  max-width: 80px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* =================== Memo Edit Button =================== */
+.memo-edit-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  margin-left: -2px;
+  border: none;
+  border-radius: 4px;
+  background: transparent;
+  color: var(--c-text-sub);
+  font-size: 0.7rem;
+  cursor: pointer;
+  padding: 0;
+  flex-shrink: 0;
+  transition: color var(--transition), background var(--transition);
+  transform: scaleX(-1);
+}
+
+.memo-edit-btn:hover {
+  color: var(--c-primary);
+  background: var(--c-primary-light);
+}
+
+/* =================== Note Input Inline =================== */
+.note-input-inline {
+  width: 70px;
+  font-size: 0.72rem;
+  font-family: var(--font);
+  border: 1px solid var(--c-primary);
+  border-radius: var(--radius-sm);
+  padding: 2px 5px;
+  background: var(--c-surface);
+  color: var(--c-text);
+  box-shadow: 0 0 0 2px rgba(79, 110, 247, .12);
+  outline: none;
+}
+
+.note-input-inline::placeholder {
+  color: #b0b7c3;
+}
+
+/* =================== Count Cell =================== */
+.cell-count {
+  text-align: center;
+  font-weight: 700;
+  font-size: 0.82rem;
+  min-width: 52px;
+  border-left: 2px solid var(--c-border);
+  transition: background var(--transition), color var(--transition);
+}
+
+.cell-count.good {
+  background: var(--c-green-bg);
+  color: var(--c-green-text);
+}
+
+.cell-count.low {
+  background: var(--c-red-bg);
+  color: var(--c-red-text);
+}
+
+/* =================== Weekend Rows =================== */
+.row-weekend td {
+  background-color: var(--c-weekend-1);
+}
+
+.row-weekend-alt td {
+  background-color: var(--c-weekend-2);
+}
+
+.row-weekend:hover td,
+.row-weekend-alt:hover td {
+  background-color: #ffe8c8 !important;
+}
+
+/* Date group separator */
+.row-group-start td {
+  border-top: 2px solid var(--c-border);
+}
+
+/* =================== Loading =================== */
+.loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+  font-size: 0.9rem;
+  color: var(--c-text-sub);
+}
+
+.loading .spinner {
+  width: 20px;
+  height: 20px;
+  border: 2.5px solid var(--c-border);
+  border-top-color: var(--c-primary);
+  border-radius: 50%;
+  animation: spin .6s linear infinite;
+  margin-right: 10px;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* =================== Footer =================== */
+.app-footer {
+  text-align: center;
+  margin-top: 20px;
+  font-size: 0.72rem;
+  color: var(--c-text-sub);
+}
+
+/* =================== Responsive =================== */
+@media (max-width: 640px) {
+  html {
+    font-size: 13px;
+  }
+
+  .app {
+    padding: 12px 8px 32px;
+  }
+
+  .app-header h1 {
+    font-size: 1.15rem;
+  }
+
+  thead th {
+    padding: 8px 6px;
+    font-size: 0.72rem;
+  }
+
+  tbody td {
+    padding: 4px 5px;
+  }
+
+  .note-input {
+    width: 100px;
+  }
+}

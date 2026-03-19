@@ -24,7 +24,7 @@ const DATES = [
 
 const PERIODS = ['am', 'pm'];
 
-function key(date, period, name) {
+function cellKey(date, period, name) {
   return `${date}_${period}_${name}`;
 }
 
@@ -33,20 +33,25 @@ function isWeekendOrHoliday(d) {
 }
 
 export default function App() {
+  const [title, setTitle] = useState('日程調整');
+  const [year, setYear] = useState('');
   const [members, setMembers] = useState([]);
   const [data, setData] = useState({});
   const [loading, setLoading] = useState(true);
+  const [openNote, setOpenNote] = useState(null);
   const debounceTimers = useRef({});
 
   useEffect(() => {
     Promise.all([
-      fetch('/api/members').then(r => r.json()),
+      fetch('/api/config').then(r => r.json()),
       fetch('/api/responses').then(r => r.json()),
-    ]).then(([memberList, responses]) => {
-      setMembers(memberList);
+    ]).then(([config, responses]) => {
+      setTitle(config.title);
+      setYear(config.year);
+      setMembers(config.members);
       const map = {};
       for (const r of responses) {
-        map[key(r.date, r.period, r.name)] = {
+        map[cellKey(r.date, r.period, r.name)] = {
           available: !!r.available,
           note: r.note || '',
         };
@@ -66,7 +71,7 @@ export default function App() {
 
   const handleCheck = useCallback((name, date, period) => {
     setData(prev => {
-      const k = key(date, period, name);
+      const k = cellKey(date, period, name);
       const current = prev[k] || { available: false, note: '' };
       const newAvailable = !current.available;
       const newNote = newAvailable ? current.note : '';
@@ -76,14 +81,13 @@ export default function App() {
   }, [saveCell]);
 
   const handleNoteChange = useCallback((name, date, period, note) => {
-    const k = key(date, period, name);
+    const k = cellKey(date, period, name);
     setData(prev => ({ ...prev, [k]: { ...prev[k], note } }));
 
-    const timerKey = k;
-    if (debounceTimers.current[timerKey]) {
-      clearTimeout(debounceTimers.current[timerKey]);
+    if (debounceTimers.current[k]) {
+      clearTimeout(debounceTimers.current[k]);
     }
-    debounceTimers.current[timerKey] = setTimeout(() => {
+    debounceTimers.current[k] = setTimeout(() => {
       setData(prev => {
         const cell = prev[k];
         if (cell) saveCell(name, date, period, cell.available, cell.note);
@@ -93,11 +97,10 @@ export default function App() {
   }, [saveCell]);
 
   const handleNoteBlur = useCallback((name, date, period) => {
-    const k = key(date, period, name);
-    const timerKey = k;
-    if (debounceTimers.current[timerKey]) {
-      clearTimeout(debounceTimers.current[timerKey]);
-      delete debounceTimers.current[timerKey];
+    const k = cellKey(date, period, name);
+    if (debounceTimers.current[k]) {
+      clearTimeout(debounceTimers.current[k]);
+      delete debounceTimers.current[k];
     }
     setData(prev => {
       const cell = prev[k];
@@ -109,118 +112,134 @@ export default function App() {
   const getCount = useCallback((date, period) => {
     let count = 0;
     for (const m of members) {
-      const cell = data[key(date, period, m)];
+      const cell = data[cellKey(date, period, m)];
       if (cell && cell.available) count++;
     }
     return count;
   }, [data, members]);
 
   if (loading) {
-    return <div style={{ padding: 20, textAlign: 'center' }}>読み込み中...</div>;
+    return (
+      <div className="loading">
+        <div className="spinner" />
+        読み込み中...
+      </div>
+    );
   }
 
   return (
-    <div style={{ padding: '10px' }}>
-      <h1 style={{ fontSize: '1.3rem', marginBottom: '10px' }}>部活 春休み日程調整</h1>
-      <div style={{ overflowX: 'auto' }}>
-        <table style={{ borderCollapse: 'collapse', fontSize: '0.85rem', whiteSpace: 'nowrap' }}>
-          <thead>
-            <tr>
-              <th style={thStyle}>日付</th>
-              <th style={thStyle}>時間帯</th>
-              {members.map(m => (
-                <th key={m} style={thStyle}>{m}</th>
-              ))}
-              <th style={thStyle}>計</th>
-            </tr>
-          </thead>
-          <tbody>
-            {DATES.map((d, di) =>
-              PERIODS.map((period, pi) => {
-                const count = getCount(d.date, period);
-                const isFirst = pi === 0;
-                const weekend = isWeekendOrHoliday(d);
-                const rowBg = weekend
-                  ? (di % 2 === 0 ? '#fff3e0' : '#ffe0b2')
-                  : (di % 2 === 0 ? '#ffffff' : '#f5f5f5');
+    <div className="app">
+      <header className="app-header">
+        <h1>{title}</h1>
+        {year && <span className="badge">{year}</span>}
+      </header>
 
-                return (
-                  <tr key={`${d.date}_${period}`} style={{ backgroundColor: rowBg }}>
-                    {isFirst && (
-                      <td rowSpan={2} style={{ ...tdStyle, fontWeight: 'bold', textAlign: 'center', verticalAlign: 'middle' }}>
-                        {d.label}
-                        <br />
-                        <span style={{ fontSize: '0.75rem', color: weekend ? '#e65100' : '#666' }}>
-                          ({d.dow}{d.note && `・${d.note}`})
-                        </span>
-                      </td>
-                    )}
-                    <td style={{ ...tdStyle, textAlign: 'center', fontWeight: 500 }}>
-                      {period === 'am' ? 'AM' : 'PM'}
-                    </td>
-                    {members.map(m => {
-                      const k = key(d.date, period, m);
-                      const cell = data[k] || { available: false, note: '' };
-                      return (
-                        <td key={m} style={tdStyle}>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: '3px' }}>
-                            <input
-                              type="checkbox"
-                              checked={cell.available}
-                              onChange={() => handleCheck(m, d.date, period)}
-                              style={{ cursor: 'pointer', margin: 0 }}
-                            />
-                            {cell.available && (
-                              <input
-                                type="text"
-                                value={cell.note}
-                                onChange={e => handleNoteChange(m, d.date, period, e.target.value)}
-                                onBlur={() => handleNoteBlur(m, d.date, period)}
-                                placeholder="メモ"
-                                style={{
-                                  width: '70px',
-                                  fontSize: '0.75rem',
-                                  border: '1px solid #ccc',
-                                  borderRadius: '3px',
-                                  padding: '1px 3px',
-                                }}
-                              />
-                            )}
+      <div className="table-card">
+        <div className="table-scroll">
+          <table>
+            <thead>
+              <tr>
+                <th>日付</th>
+                <th>時間帯</th>
+                {members.map(m => <th key={m}>{m}</th>)}
+                <th>計</th>
+              </tr>
+            </thead>
+            <tbody>
+              {DATES.map((d, di) =>
+                PERIODS.map((period, pi) => {
+                  const count = getCount(d.date, period);
+                  const isFirst = pi === 0;
+                  const weekend = isWeekendOrHoliday(d);
+
+                  const rowClasses = [
+                    weekend ? (di % 2 === 0 ? 'row-weekend' : 'row-weekend-alt') : '',
+                    isFirst ? 'row-group-start' : '',
+                  ].filter(Boolean).join(' ');
+
+                  return (
+                    <tr key={`${d.date}_${period}`} className={rowClasses}>
+                      {isFirst && (
+                        <td rowSpan={2} className="cell-date">
+                          <div className="date-num">{d.label}</div>
+                          <div className={`date-dow${weekend ? ' weekend' : ''}`}>
+                            {d.dow}{d.note && `・${d.note}`}
                           </div>
                         </td>
-                      );
-                    })}
-                    <td style={{
-                      ...tdStyle,
-                      textAlign: 'center',
-                      fontWeight: 'bold',
-                      backgroundColor: count >= 2 ? '#c8e6c9' : '#ffcdd2',
-                      color: count >= 2 ? '#2e7d32' : '#c62828',
-                    }}>
-                      {count}人
-                    </td>
-                  </tr>
-                );
-              })
-            )}
-          </tbody>
-        </table>
+                      )}
+                      <td className="cell-period">
+                        {period === 'am' ? 'AM' : 'PM'}
+                      </td>
+                      {members.map(m => {
+                        const k = cellKey(d.date, period, m);
+                        const cell = data[k] || { available: false, note: '' };
+                        const noteOpen = openNote === k;
+                        const hasNote = cell.note && cell.note.length > 0;
+                        return (
+                          <td key={m} className="cell-check">
+                            <div className="check-wrapper">
+                              <input
+                                type="checkbox"
+                                className="cb"
+                                checked={cell.available}
+                                onChange={() => handleCheck(m, d.date, period)}
+                              />
+                              {cell.available && !noteOpen && !hasNote && (
+                                <button
+                                  className="memo-btn"
+                                  title="メモを追加"
+                                  onClick={() => setOpenNote(k)}
+                                >+</button>
+                              )}
+                              {cell.available && !noteOpen && hasNote && (
+                                <>
+                                  <span className="memo-text">{cell.note}</span>
+                                  <button
+                                    className="memo-edit-btn"
+                                    title="メモを編集"
+                                    onClick={() => setOpenNote(k)}
+                                  >&#9998;</button>
+                                </>
+                              )}
+                              {noteOpen && (
+                                <input
+                                  type="text"
+                                  className="note-input-inline"
+                                  value={cell.note}
+                                  onChange={e => handleNoteChange(m, d.date, period, e.target.value)}
+                                  onBlur={() => {
+                                    handleNoteBlur(m, d.date, period);
+                                    setTimeout(() => setOpenNote(prev => prev === k ? null : prev), 150);
+                                  }}
+                                  onKeyDown={e => {
+                                    if (e.key === 'Enter' || e.key === 'Escape') {
+                                      handleNoteBlur(m, d.date, period);
+                                      setOpenNote(null);
+                                    }
+                                  }}
+                                  placeholder="メモ"
+                                  autoFocus
+                                />
+                              )}
+                            </div>
+                          </td>
+                        );
+                      })}
+                      <td className={`cell-count ${count >= 2 ? 'good' : 'low'}`}>
+                        {count}人
+                      </td>
+                    </tr>
+                  );
+                })
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
+
+      <footer className="app-footer">
+        チェックは自動保存されます
+      </footer>
     </div>
   );
 }
-
-const thStyle = {
-  border: '1px solid #ccc',
-  padding: '6px 8px',
-  backgroundColor: '#37474f',
-  color: '#fff',
-  position: 'sticky',
-  top: 0,
-  zIndex: 1,
-};
-
-const tdStyle = {
-  border: '1px solid #ddd',
-  padding: '4px 6px',
-};
