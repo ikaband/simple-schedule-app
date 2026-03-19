@@ -51,6 +51,7 @@ app.get('/api/config', (req, res) => {
     year: process.env.APP_YEAR || '',
     members: (process.env.MEMBERS || '').split(',').filter(Boolean),
     dates: generateDates(),
+    countThreshold: parseInt(process.env.COUNT_THRESHOLD, 10) || 2,
   });
 });
 

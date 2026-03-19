@@ -18,6 +18,7 @@ export default function App() {
   const [data, setData] = useState({});
   const [loading, setLoading] = useState(true);
   const [openNote, setOpenNote] = useState(null);
+  const [countThreshold, setCountThreshold] = useState(2);
   const debounceTimers = useRef({});
 
   useEffect(() => {
@@ -29,6 +30,8 @@ export default function App() {
       setYear(config.year);
       setDates(config.dates);
       setMembers(config.members);
+      if (config.countThreshold != null) setCountThreshold(config.countThreshold);
+      document.title = config.year ? `${config.title} ${config.year}` : config.title;
       const map = {};
       for (const r of responses) {
         map[cellKey(r.date, r.period, r.name)] = {
@@ -98,6 +101,17 @@ export default function App() {
     return count;
   }, [data, members]);
 
+  const getMemberDays = useCallback((member) => {
+    let checks = 0;
+    for (const d of dates) {
+      for (const p of PERIODS) {
+        const cell = data[cellKey(d.date, p, member)];
+        if (cell && cell.available) checks++;
+      }
+    }
+    return checks * 0.5;
+  }, [data, dates]);
+
   if (loading) {
     return (
       <div className="loading">
@@ -131,8 +145,10 @@ export default function App() {
                   const isFirst = pi === 0;
                   const weekend = isWeekendOrHoliday(d);
 
+                  const isSunOrHoliday = d.dow === '日' || d.note === '祝';
+                  const isSat = d.dow === '土';
                   const rowClasses = [
-                    weekend ? (di % 2 === 0 ? 'row-weekend' : 'row-weekend-alt') : '',
+                    isSunOrHoliday ? 'row-weekend-alt' : (isSat ? 'row-weekend' : ''),
                     isFirst ? 'row-group-start' : '',
                   ].filter(Boolean).join(' ');
 
@@ -209,7 +225,7 @@ export default function App() {
                           </td>
                         );
                       })}
-                      <td className={`cell-count ${count >= 2 ? 'good' : 'low'}`}>
+                      <td className={`cell-count ${count >= countThreshold ? 'good' : 'low'}`}>
                         {count}人
                       </td>
                     </tr>
@@ -217,6 +233,16 @@ export default function App() {
                 })
               )}
             </tbody>
+            <tfoot>
+              <tr>
+                <td colSpan={2} className="summary-label">合計日数</td>
+                {members.map(m => {
+                  const days = getMemberDays(m);
+                  return <td key={m} className="summary-cell">{days % 1 === 0 ? days : days.toFixed(1)}日</td>;
+                })}
+                <td className="summary-count"></td>
+              </tr>
+            </tfoot>
           </table>
         </div>
       </div>

@@ -152,6 +152,10 @@ thead th:last-child {
   width: 48px;
 }
 
+thead th + th {
+  border-left: 1px solid rgba(255,255,255,.1);
+}
+
 .th-date {
   width: 106px;
   text-align: center;
@@ -165,8 +169,17 @@ tbody td {
   vertical-align: middle;
 }
 
-tbody tr:hover td {
-  background-color: rgba(79, 110, 247, .025);
+/* Hover only on check cells (avoid rowSpan inconsistency on date cell) */
+tbody tr:hover td.cell-check {
+  background-color: rgba(79, 110, 247, .04);
+}
+
+tbody tr:hover td.cell-period {
+  background-color: rgba(79, 110, 247, .04);
+}
+
+tbody tr:hover td.cell-count {
+  filter: brightness(0.97);
 }
 
 /* =================== Date Cell =================== */
@@ -174,8 +187,8 @@ tbody tr:hover td {
   text-align: center;
   vertical-align: middle;
   font-weight: 600;
-  border-right: 1px solid var(--c-border-light);
   padding: 6px 12px;
+  border-right: 1px solid var(--c-border-light);
 }
 
 .cell-date .date-num {
@@ -212,7 +225,7 @@ tbody tr:hover td {
   min-width: 50px;
   padding: 3px 4px;
   position: relative;
-  border-right: 1px solid var(--c-border-light);
+  border-right: 1px solid var(--c-border);
 }
 
 .cell-check .check-wrapper {
@@ -397,14 +410,46 @@ tbody tr:hover td {
   background-color: var(--c-weekend-2);
 }
 
-.row-weekend:hover td,
-.row-weekend-alt:hover td {
+.row-weekend:hover td.cell-check,
+.row-weekend:hover td.cell-period,
+.row-weekend-alt:hover td.cell-check,
+.row-weekend-alt:hover td.cell-period {
   background-color: #ffe8c8 !important;
 }
 
 /* Date group separator */
 .row-group-start td {
   border-top: 1.5px solid var(--c-border);
+}
+
+/* =================== Summary Footer Row =================== */
+tfoot td {
+  background: var(--c-bg);
+  color: var(--c-text-sub);
+  padding: 8px 8px;
+  font-weight: 600;
+  font-size: 0.78rem;
+  text-align: center;
+  border-top: 2px solid var(--c-border);
+}
+
+tfoot td.summary-label {
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.03em;
+}
+
+tfoot .summary-label {
+  border-right: 2.5px solid var(--c-border);
+}
+
+tfoot .summary-cell {
+  border-right: 1px solid var(--c-border);
+}
+
+tfoot .summary-count {
+  border-left: 2px solid var(--c-border);
+  width: 48px;
 }
 
 /* =================== Loading =================== */
@@ -479,7 +524,7 @@ tbody tr:hover td {
   }
 
   .cell-period {
-    left: 60px;
+    left: 58px;
     border-right-color: var(--c-border);
   }
 
@@ -497,6 +542,22 @@ tbody tr:hover td {
   .row-weekend-alt .cell-date,
   .row-weekend-alt .cell-period {
     background: var(--c-weekend-2);
+  }
+
+  /* Prevent hover transparency on sticky columns */
+  tbody tr:hover .cell-date,
+  tbody tr:hover .cell-period {
+    background-color: var(--c-surface);
+  }
+
+  .row-weekend:hover .cell-date,
+  .row-weekend:hover .cell-period {
+    background: var(--c-weekend-1) !important;
+  }
+
+  .row-weekend-alt:hover .cell-date,
+  .row-weekend-alt:hover .cell-period {
+    background: var(--c-weekend-2) !important;
   }
 
   /* Larger touch targets */

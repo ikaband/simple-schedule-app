@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <rect x="6" y="12" width="52" height="46" rx="6" fill="#4f6ef7"/>
+  <rect x="6" y="12" width="52" height="14" rx="6" fill="#1e293b"/>
+  <rect x="6" y="20" width="52" height="6" fill="#1e293b"/>
+  <rect x="10" y="30" width="10" height="8" rx="2" fill="#fff" opacity=".9"/>
+  <rect x="27" y="30" width="10" height="8" rx="2" fill="#fff" opacity=".9"/>
+  <rect x="44" y="30" width="10" height="8" rx="2" fill="#fff" opacity=".9"/>
+  <rect x="10" y="43" width="10" height="8" rx="2" fill="#fff" opacity=".9"/>
+  <rect x="27" y="43" width="10" height="8" rx="2" fill="#fff" opacity=".9"/>
+  <rect x="44" y="43" width="10" height="8" rx="2" fill="#e67700" opacity=".9"/>
+  <rect x="18" y="6" width="4" height="12" rx="2" fill="#1e293b"/>
+  <rect x="42" y="6" width="4" height="12" rx="2" fill="#1e293b"/>
+  <path d="M13 33l2.5 2.5L20 31" stroke="#4f6ef7" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M30 33l2.5 2.5L37 31" stroke="#4f6ef7" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
