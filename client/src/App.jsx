@@ -249,7 +249,7 @@ export default function App() {
 
       <footer className="app-footer">
         <span className="save-icon" />
-        チェックは自動保存されます
+        チェックとメモは自動保存されます
       </footer>
     </div>
   );
