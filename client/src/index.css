@@ -20,16 +20,16 @@
   --c-weekend-1: #fff8f0;
   --c-weekend-2: #fff0de;
   --c-weekend-accent: #e67700;
-  --c-green-bg: #e8f5e9;
-  --c-green-text: #2e7d32;
+  --c-green-bg: #dcf5e0;
+  --c-green-text: #1b7a2b;
   --c-red-bg: #ffeef0;
   --c-red-text: #d32f2f;
   --c-header-bg: #1e293b;
   --c-header-text: #f1f5f9;
-  --radius: 10px;
+  --c-checked-bg: rgba(79, 110, 247, .06);
+  --radius: 12px;
   --radius-sm: 6px;
-  --shadow: 0 1px 3px rgba(0,0,0,.06), 0 4px 12px rgba(0,0,0,.04);
-  --shadow-lg: 0 4px 16px rgba(0,0,0,.08), 0 8px 32px rgba(0,0,0,.06);
+  --shadow: 0 1px 3px rgba(0,0,0,.05), 0 6px 16px rgba(0,0,0,.04);
   --font: 'Inter', 'Noto Sans JP', -apple-system, BlinkMacSystemFont, sans-serif;
   --transition: 150ms ease;
 }
@@ -51,30 +51,40 @@ body {
 .app {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 24px 16px 48px;
+  padding: 28px 20px 48px;
+  animation: fadeIn .3s ease;
 }
 
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* =================== Header =================== */
 .app-header {
   display: flex;
   align-items: center;
   gap: 12px;
-  margin-bottom: 20px;
+  margin-bottom: 18px;
 }
 
 .app-header h1 {
-  font-size: 1.35rem;
+  font-size: 1.4rem;
   font-weight: 700;
   letter-spacing: -0.02em;
+  color: var(--c-text);
 }
 
 .app-header .badge {
-  font-size: 0.7rem;
+  font-size: 0.68rem;
   font-weight: 600;
   background: var(--c-primary);
   color: #fff;
-  padding: 3px 10px;
+  padding: 2px 10px;
   border-radius: 999px;
-  letter-spacing: 0.02em;
+  letter-spacing: 0.03em;
+  position: relative;
+  top: 0;
 }
 
 /* =================== Table Card =================== */
@@ -83,11 +93,30 @@ body {
   border-radius: var(--radius);
   box-shadow: var(--shadow);
   overflow: hidden;
+  border: 1px solid var(--c-border-light);
 }
 
 .table-scroll {
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
+}
+
+/* Custom scrollbar */
+.table-scroll::-webkit-scrollbar {
+  height: 6px;
+}
+
+.table-scroll::-webkit-scrollbar-track {
+  background: var(--c-bg);
+}
+
+.table-scroll::-webkit-scrollbar-thumb {
+  background: #c4c9d0;
+  border-radius: 3px;
+}
+
+.table-scroll::-webkit-scrollbar-thumb:hover {
+  background: #a0a6af;
 }
 
 table {
@@ -96,21 +125,22 @@ table {
   border-spacing: 0;
   font-size: 0.85rem;
   white-space: nowrap;
+  /* table-layout: auto — cells grow with content */
 }
 
 /* =================== Header =================== */
 thead th {
   background: var(--c-header-bg);
   color: var(--c-header-text);
-  padding: 10px 12px;
+  padding: 10px 8px;
   font-weight: 600;
-  font-size: 0.78rem;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
+  font-size: 0.76rem;
+  letter-spacing: 0.03em;
   position: sticky;
   top: 0;
   z-index: 10;
-  border-bottom: 2px solid rgba(255,255,255,.08);
+  border-bottom: 2px solid rgba(255,255,255,.06);
+  text-align: center;
 }
 
 thead th:first-child {
@@ -119,37 +149,46 @@ thead th:first-child {
 
 thead th:last-child {
   border-top-right-radius: var(--radius);
+  width: 48px;
+}
+
+.th-date {
+  width: 106px;
+  text-align: center;
 }
 
 /* =================== Body Cells =================== */
 tbody td {
-  padding: 6px 10px;
+  padding: 5px 6px;
   border-bottom: 1px solid var(--c-border-light);
   transition: background var(--transition);
+  vertical-align: middle;
 }
 
 tbody tr:hover td {
-  background-color: rgba(79, 110, 247, .03);
+  background-color: rgba(79, 110, 247, .025);
 }
 
-/* Date cell */
+/* =================== Date Cell =================== */
 .cell-date {
   text-align: center;
   vertical-align: middle;
   font-weight: 600;
-  border-right: 2px solid var(--c-border);
-  min-width: 70px;
+  border-right: 1px solid var(--c-border-light);
+  padding: 6px 12px;
 }
 
 .cell-date .date-num {
   font-size: 0.95rem;
+  line-height: 1.2;
 }
 
 .cell-date .date-dow {
-  font-size: 0.7rem;
+  font-size: 0.68rem;
   font-weight: 500;
   color: var(--c-text-sub);
   margin-top: 1px;
+  line-height: 1.2;
 }
 
 .cell-date .date-dow.weekend {
@@ -157,24 +196,21 @@ tbody tr:hover td {
   font-weight: 600;
 }
 
-/* Period cell */
+/* =================== Period Cell =================== */
 .cell-period {
   text-align: center;
   font-weight: 600;
-  font-size: 0.75rem;
+  font-size: 0.72rem;
   color: var(--c-text-sub);
-  min-width: 32px;
-  width: 32px;
-  padding: 4px 4px;
-  border-right: 1px solid var(--c-border-light);
+  padding: 4px 10px;
+  border-right: 2.5px solid var(--c-border);
 }
 
-/* Checkbox cell */
+/* =================== Checkbox Cell =================== */
 .cell-check {
   text-align: center;
-  min-width: 52px;
-  width: 52px;
-  padding: 4px 6px;
+  min-width: 50px;
+  padding: 3px 4px;
   position: relative;
 }
 
@@ -182,17 +218,50 @@ tbody tr:hover td {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 6px;
+  gap: 5px;
+  position: relative;
 }
 
-/* =================== Checkbox =================== */
+/* =================== Custom Checkbox =================== */
 .cb {
-  width: 16px;
-  height: 16px;
+  appearance: none;
+  -webkit-appearance: none;
+  width: 17px;
+  height: 17px;
+  border: 2px solid #c4c9d0;
+  border-radius: 4px;
   cursor: pointer;
-  accent-color: var(--c-primary);
   margin: 0;
   flex-shrink: 0;
+  position: relative;
+  transition: background var(--transition), border-color var(--transition);
+  background: var(--c-surface);
+}
+
+.cb:hover {
+  border-color: var(--c-primary);
+}
+
+.cb:checked {
+  background: var(--c-primary);
+  border-color: var(--c-primary);
+}
+
+.cb:checked::after {
+  content: '';
+  position: absolute;
+  left: 4.5px;
+  top: 1.5px;
+  width: 5px;
+  height: 9px;
+  border: solid #fff;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+
+.cb:focus-visible {
+  outline: 2px solid var(--c-primary);
+  outline-offset: 2px;
 }
 
 /* =================== Memo Button (add) =================== */
@@ -202,35 +271,38 @@ tbody tr:hover td {
   justify-content: center;
   width: 16px;
   height: 16px;
-  border: 1px solid var(--c-border);
+  border: 1px dashed #c4c9d0;
   border-radius: 3px;
-  background: var(--c-bg);
-  color: var(--c-text-sub);
-  font-size: 0.65rem;
+  background: transparent;
+  color: #b0b7c3;
+  font-size: 0.7rem;
   font-weight: 700;
   font-family: var(--font);
   cursor: pointer;
   padding: 0;
   line-height: 1;
-  transition: background var(--transition), border-color var(--transition), color var(--transition);
+  transition: all var(--transition);
   flex-shrink: 0;
+}
+
+.memo-btn.invisible {
+  visibility: hidden;
 }
 
 .memo-btn:hover {
   background: var(--c-primary-light);
   border-color: var(--c-primary);
+  border-style: solid;
   color: var(--c-primary);
 }
 
 /* =================== Memo Text (display) =================== */
 .memo-text {
-  font-size: 0.78rem;
+  font-size: 0.75rem;
   font-weight: 600;
   color: var(--c-text);
-  max-width: 80px;
-  overflow: hidden;
-  text-overflow: ellipsis;
   white-space: nowrap;
+  line-height: 1.3;
 }
 
 /* =================== Memo Edit Button =================== */
@@ -238,14 +310,14 @@ tbody tr:hover td {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 22px;
-  height: 22px;
+  width: 20px;
+  height: 20px;
   margin-left: -2px;
   border: none;
   border-radius: 4px;
   background: transparent;
-  color: var(--c-text-sub);
-  font-size: 0.7rem;
+  color: #b0b7c3;
+  font-size: 0.65rem;
   cursor: pointer;
   padding: 0;
   flex-shrink: 0;
@@ -258,30 +330,49 @@ tbody tr:hover td {
   background: var(--c-primary-light);
 }
 
-/* =================== Note Input Inline =================== */
-.note-input-inline {
-  width: 70px;
-  font-size: 0.72rem;
-  font-family: var(--font);
-  border: 1px solid var(--c-primary);
-  border-radius: var(--radius-sm);
-  padding: 2px 5px;
+/* =================== Note Popover =================== */
+.note-popover {
+  position: absolute;
+  top: calc(100% + 2px);
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 30;
   background: var(--c-surface);
-  color: var(--c-text);
-  box-shadow: 0 0 0 2px rgba(79, 110, 247, .12);
-  outline: none;
+  border: 1px solid var(--c-border);
+  border-radius: var(--radius-sm);
+  box-shadow: 0 4px 16px rgba(0,0,0,.12), 0 1px 4px rgba(0,0,0,.08);
+  padding: 6px;
+  min-width: 140px;
 }
 
-.note-input-inline::placeholder {
-  color: #b0b7c3;
+.note-input {
+  width: 100%;
+  font-size: 0.78rem;
+  font-family: var(--font);
+  border: 1.5px solid var(--c-primary);
+  border-radius: 4px;
+  padding: 4px 8px;
+  background: var(--c-surface);
+  color: var(--c-text);
+  box-shadow: 0 0 0 2px rgba(79, 110, 247, .08);
+  outline: none;
+  transition: box-shadow var(--transition);
+}
+
+.note-input:focus {
+  box-shadow: 0 0 0 3px rgba(79, 110, 247, .15);
+}
+
+.note-input::placeholder {
+  color: #c4c9d0;
 }
 
 /* =================== Count Cell =================== */
 .cell-count {
   text-align: center;
   font-weight: 700;
-  font-size: 0.82rem;
-  min-width: 52px;
+  font-size: 0.8rem;
+  width: 48px;
   border-left: 2px solid var(--c-border);
   transition: background var(--transition), color var(--transition);
 }
@@ -312,27 +403,28 @@ tbody tr:hover td {
 
 /* Date group separator */
 .row-group-start td {
-  border-top: 2px solid var(--c-border);
+  border-top: 1.5px solid var(--c-border);
 }
 
 /* =================== Loading =================== */
 .loading {
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
   min-height: 60vh;
-  font-size: 0.9rem;
+  gap: 12px;
+  font-size: 0.85rem;
   color: var(--c-text-sub);
 }
 
 .loading .spinner {
-  width: 20px;
-  height: 20px;
+  width: 24px;
+  height: 24px;
   border: 2.5px solid var(--c-border);
   border-top-color: var(--c-primary);
   border-radius: 50%;
   animation: spin .6s linear infinite;
-  margin-right: 10px;
 }
 
 @keyframes spin {
@@ -341,10 +433,22 @@ tbody tr:hover td {
 
 /* =================== Footer =================== */
 .app-footer {
-  text-align: center;
-  margin-top: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 16px;
   font-size: 0.72rem;
   color: var(--c-text-sub);
+}
+
+.app-footer .save-icon {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  background: #6ee07a;
+  border-radius: 50%;
+  flex-shrink: 0;
 }
 
 /* =================== Responsive =================== */
@@ -362,15 +466,25 @@ tbody tr:hover td {
   }
 
   thead th {
-    padding: 8px 6px;
-    font-size: 0.72rem;
+    padding: 8px 4px;
+    font-size: 0.7rem;
   }
 
   tbody td {
-    padding: 4px 5px;
+    padding: 3px 3px;
   }
 
-  .note-input {
-    width: 100px;
+  .cell-check {
+    min-width: 44px;
+    padding: 3px 2px;
+  }
+
+  .note-popover {
+    min-width: 120px;
+  }
+
+  .memo-text {
+    max-width: 50px;
+    font-size: 0.7rem;
   }
 }

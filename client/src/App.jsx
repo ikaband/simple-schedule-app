@@ -1,27 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 
-const DATES = [
-  { date: '2026-03-20', label: '3/20', dow: '金', note: '祝' },
-  { date: '2026-03-21', label: '3/21', dow: '土', note: '' },
-  { date: '2026-03-22', label: '3/22', dow: '日', note: '' },
-  { date: '2026-03-23', label: '3/23', dow: '月', note: '' },
-  { date: '2026-03-24', label: '3/24', dow: '火', note: '' },
-  { date: '2026-03-25', label: '3/25', dow: '水', note: '' },
-  { date: '2026-03-26', label: '3/26', dow: '木', note: '' },
-  { date: '2026-03-27', label: '3/27', dow: '金', note: '' },
-  { date: '2026-03-28', label: '3/28', dow: '土', note: '' },
-  { date: '2026-03-29', label: '3/29', dow: '日', note: '' },
-  { date: '2026-03-30', label: '3/30', dow: '月', note: '' },
-  { date: '2026-03-31', label: '3/31', dow: '火', note: '' },
-  { date: '2026-04-01', label: '4/1', dow: '水', note: '' },
-  { date: '2026-04-02', label: '4/2', dow: '木', note: '' },
-  { date: '2026-04-03', label: '4/3', dow: '金', note: '' },
-  { date: '2026-04-04', label: '4/4', dow: '土', note: '' },
-  { date: '2026-04-05', label: '4/5', dow: '日', note: '' },
-  { date: '2026-04-06', label: '4/6', dow: '月', note: '' },
-  { date: '2026-04-07', label: '4/7', dow: '火', note: '' },
-];
-
 const PERIODS = ['am', 'pm'];
 
 function cellKey(date, period, name) {
@@ -35,6 +13,7 @@ function isWeekendOrHoliday(d) {
 export default function App() {
   const [title, setTitle] = useState('日程調整');
   const [year, setYear] = useState('');
+  const [dates, setDates] = useState([]);
   const [members, setMembers] = useState([]);
   const [data, setData] = useState({});
   const [loading, setLoading] = useState(true);
@@ -48,6 +27,7 @@ export default function App() {
     ]).then(([config, responses]) => {
       setTitle(config.title);
       setYear(config.year);
+      setDates(config.dates);
       setMembers(config.members);
       const map = {};
       for (const r of responses) {
@@ -139,14 +119,13 @@ export default function App() {
           <table>
             <thead>
               <tr>
-                <th>日付</th>
-                <th>時間帯</th>
+                <th className="th-date" colSpan={2}>日付 / 時間</th>
                 {members.map(m => <th key={m}>{m}</th>)}
                 <th>計</th>
               </tr>
             </thead>
             <tbody>
-              {DATES.map((d, di) =>
+              {dates.map((d, di) =>
                 PERIODS.map((period, pi) => {
                   const count = getCount(d.date, period);
                   const isFirst = pi === 0;
@@ -184,27 +163,32 @@ export default function App() {
                                 checked={cell.available}
                                 onChange={() => handleCheck(m, d.date, period)}
                               />
-                              {cell.available && !noteOpen && !hasNote && (
+                              {!cell.available && (
+                                <span className="memo-btn invisible">+</span>
+                              )}
+                              {cell.available && !hasNote && (
                                 <button
-                                  className="memo-btn"
+                                  className={`memo-btn${noteOpen ? ' invisible' : ''}`}
                                   title="メモを追加"
-                                  onClick={() => setOpenNote(k)}
+                                  onClick={() => setOpenNote(noteOpen ? null : k)}
                                 >+</button>
                               )}
-                              {cell.available && !noteOpen && hasNote && (
+                              {cell.available && hasNote && (
                                 <>
                                   <span className="memo-text">{cell.note}</span>
                                   <button
                                     className="memo-edit-btn"
                                     title="メモを編集"
-                                    onClick={() => setOpenNote(k)}
+                                    onClick={() => setOpenNote(noteOpen ? null : k)}
                                   >&#9998;</button>
                                 </>
                               )}
-                              {noteOpen && (
+                            </div>
+                            {noteOpen && (
+                              <div className="note-popover">
                                 <input
                                   type="text"
-                                  className="note-input-inline"
+                                  className="note-input"
                                   value={cell.note}
                                   onChange={e => handleNoteChange(m, d.date, period, e.target.value)}
                                   onBlur={() => {
@@ -217,11 +201,11 @@ export default function App() {
                                       setOpenNote(null);
                                     }
                                   }}
-                                  placeholder="メモ"
+                                  placeholder="メモを入力..."
                                   autoFocus
                                 />
-                              )}
-                            </div>
+                              </div>
+                            )}
                           </td>
                         );
                       })}
@@ -238,6 +222,7 @@ export default function App() {
       </div>
 
       <footer className="app-footer">
+        <span className="save-icon" />
         チェックは自動保存されます
       </footer>
     </div>
